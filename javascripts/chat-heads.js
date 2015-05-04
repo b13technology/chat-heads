@@ -4,6 +4,7 @@
 (function () {
     'use strict';
 
+    var eventHandlers = {};
     var $ = document.querySelector.bind(document);
     var removeClass = function (el, className) {
         el.className = el.className.replace(className, '');
@@ -128,20 +129,24 @@
         return ChatHead;
     }());
 
-    window.chat = (function () {
+    window.ChatHeads = (function () {
         var chatTemplate =
-               '<ul>'
-                  + '<li>'
-                      + '<p class="name">James:</p>'
-                      + '<p class="line">Hi there!</p>'
-                      + '<p class="line">How can we help today?</p>'
-                  + '</li>'
-              + '</ul>'
-              + '<form id="chat-submit">'
+           '<ul class="chat-messages"></ul>'
+
+        var userForm =
+            '<form id="user-form">'
+                + '<div class="user-input"><label for="chat-head-user-email">email</label><input id="chat-head-user-email" required class="user-email-input type="text" /></div>'
+                + '<div class="user-input"><label for="chat-head-user-name">name</label><input id="chat-head-user-name" class="user-input user-name-input" type="text" /></div>'
+                + '<input class="ok start-button" type="submit" value="OK" />'
+            +'</form>'
+
+        var chatForm =
+             '<form id="chat-submit">'
                   + '<input required class="chat-text" type="text" placeholder="Write a message" />'
                   + '<input type="submit" value="send" class="enter" />'
-              + '</form>'
-              + '<div class="attribution">chat-heads.js</div>';
+              + '</form>';
+
+        var attribution = '<div class="attribution">chat-heads.js</div>';
 
 
         var containerClass = '.chat-head-container';
@@ -149,11 +154,11 @@
 
         var turn = 'you';
         var me = '<p class="name me">Me:</p>';
-        var you = '<p class="name me">James:</p>';
+        var you = '<p class="name you"></p>';
 
-        var ChatHeads = function () {
+        var ChatHeads = function (options) {
+            this.options = options || {};
             this.container = $(containerClass);
-
             this.inertia();
             this.heads = {};
         };
@@ -253,15 +258,92 @@
             return this;
         };
 
-        ChatHeads.prototype.createMessages = function () {
+        ChatHeads.prototype.onSubmit = function (e, head) {
+            e.preventDefault();
+            var target = e.currentTarget;
+            var msg = {};
+            msg.content = target.childNodes[0].value;
+            if (this.options.requireEmail) {
+                msg.from = {
+                    name: 'Jimbo',
+                    email: this.fromEmail
+                };
+            }
+            msg.to = {
+                name: head.name,
+                email: head.email,
+                id: head.id
+            };
+            this.renderMessage(msg);
+            target.childNodes[0].value = '';
+            this.trigger('message', msg);
+
+            return false;
+        };
+
+        ChatHeads.prototype.onUserSubmit = function (e, head) {
+            var target = e.currentTarget;
+            var email = target.querySelector('#chat-head-user-email');
+            var name = target.querySelector('#chat-head-user-name');
+
+            this.container.querySelector('#user-form').style.display = 'none';
+            this.container.querySelector('#chat-submit').style.display = 'block';
+
+            this.trigger('user:logon', {
+                email: email,
+                name: name
+            });
+            return false;
+        };
+
+        ChatHeads.prototype.renderMessage = function (msg) {
+            var textContainer = this.chatContainer.querySelector('.chat-messages');
+            var message = '<p class="line">' + msg.content + '</p>';
+
+            if (this.lastMessageAuthor === msg.from.name) {
+                var child = textContainer.lastChild;
+                child.innerHTML += message;
+            }
+            else {
+                var messageEl = document.createElement('li');
+                messageEl.innerHTML += '<p class="name">' + msg.from.name + ':</p>';
+                messageEl.innerHTML += message;
+                textContainer.appendChild(messageEl);
+            }
+
+            this.lastMessageAuthor = msg.from.name;
+            textContainer.scrollTop = textContainer.scrollHeight;
+            return this;
+        };
+
+        ChatHeads.prototype.createMessages = function (head) {
             if (this.chatContainer) {
                 return this;
             }
             var chatContainer = document.createElement('div');
             chatContainer.className = 'chat';
-            chatContainer.innerHTML = chatTemplate;
+            var template = chatTemplate;
+            if (this.options.requireEmail) {
+                template += userForm;
+            }
+            template += chatForm;
+            template += attribution;
+
+            chatContainer.innerHTML = template;
             this.container.appendChild(chatContainer);
+
             this.chatContainer = chatContainer;
+
+            var userForm = chatContainer.querySelector('#user-form');
+            userForm.addEventListener('submit', function (e) {
+                this.onUserSubmit(e, head);
+            }.bind(this), false);
+
+            this.chatForm = chatContainer.querySelector('#chat-submit');
+            this.chatForm.style.display = this.options.requireEmail ? 'none' : 'block';
+            this.chatForm.addEventListener("submit", function (e) {
+                this.onSubmit(e, head)
+            }.bind(this), false);
             return this;
         };
 
@@ -304,16 +386,49 @@
             return this;
         };
 
-        ChatHeads.prototype.message = function (forHead, message) {
-            this.get(forHead)
-                .message(message);
-            this.bringToFront(forHead);
+        ChatHeads.prototype.message = function (message) {
+            this.renderMessage({
+                from: {
+                    name: message.from
+                },
+                content: message.content
+            });
+            // this.bringToFront(forHead);
             return this;
         };
 
-        return new ChatHeads();
+        // a small bit of event handling
+        ChatHeads.prototype.on = function (eventName, callback) {
+            (eventHandlers[eventName] = eventHandlers[eventName] || []).push(callback);
+            return this;
+        };
+        ChatHeads.prototype.off = function (eventName, callback) {
+            if (!callback) {
+                delete eventHandlers[eventName];
+            }
+            else {
+                for (var i = 0, events = eventHandlers[eventName]; events && events && events[i]; i++) {
+                    if (events[i] === callback) {
+                        events.splice(i--, 1);
+                    }
+                }
+            }
+            return this;
+        };
+        ChatHeads.prototype.trigger = function (eventName) {
+            for (var events = eventHandlers[eventName], i = 0; events && events[i]; i++) {
+                events[i].apply(this, events.slice.call(arguments, 1));
+            }
+            return this;
+        };
+        return ChatHeads;
 
     }());
+
+
+    var chat = window.chat =  new ChatHeads({
+        requireEmail: true
+    });
 
     setTimeout(function () {
        chat.start();
@@ -321,8 +436,15 @@
 
     chat.addHead(new ChatHead({
         name: 'James',
-        email: 'james@ivings.org.uk',
-        requireEmail: true
+        email: 'james@ivings.org.uk'
     }));
+
+    chat.on('message', function (msg) {
+        console.log(msg);
+    });
+
+    chat.on('user:logon', function (user) {
+
+    });
 
 }());
