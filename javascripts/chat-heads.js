@@ -264,10 +264,7 @@
             var msg = {};
             msg.content = target.childNodes[0].value;
             if (this.options.requireEmail) {
-                msg.from = {
-                    name: 'Jimbo',
-                    email: this.fromEmail
-                };
+                msg.from = this.currentUser;
             }
             msg.to = {
                 name: head.name,
@@ -289,10 +286,12 @@
             this.container.querySelector('#user-form').style.display = 'none';
             this.container.querySelector('#chat-submit').style.display = 'block';
 
-            this.trigger('user:logon', {
-                email: email,
-                name: name
-            });
+            this.currentUser = {
+                name: name.value,
+                email: email.value
+            };
+
+            this.trigger('user:logon', this.currentUser);
             return false;
         };
 
@@ -334,15 +333,22 @@
 
             this.chatContainer = chatContainer;
 
-            var userForm = chatContainer.querySelector('#user-form');
-            userForm.addEventListener('submit', function (e) {
-                this.onUserSubmit(e, head);
-            }.bind(this), false);
+            var form = this.container.querySelector('#user-form');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    this.onUserSubmit(e, head);
+                    return false;
+                }.bind(this), false);
+            }
 
-            this.chatForm = chatContainer.querySelector('#chat-submit');
+
+            this.chatForm = this.container.querySelector('#chat-submit');
             this.chatForm.style.display = this.options.requireEmail ? 'none' : 'block';
             this.chatForm.addEventListener("submit", function (e) {
+                e.preventDefault();
                 this.onSubmit(e, head)
+                return false;
             }.bind(this), false);
             return this;
         };
