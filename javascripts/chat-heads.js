@@ -425,26 +425,4 @@
 
     }());
 
-
-    var chat = window.chat =  new ChatHeads({
-        requireEmail: true
-    });
-
-    setTimeout(function () {
-       chat.start();
-    }, 1000);
-
-    chat.addHead(new ChatHead({
-        name: 'James',
-        email: 'james@ivings.org.uk'
-    }));
-
-    chat.on('message', function (msg) {
-        console.log(msg);
-    });
-
-    chat.on('user:logon', function (user) {
-
-    });
-
 }());
