@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="stylesheets/chat-heads.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.css">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!-- <link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'> -->
     <!--[if lt IE 9]>
@@ -17,17 +20,94 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Minimal</h1>
-        <p>A Theme for GitHub Pages</p>
-        <p class="view"><a href="http://github.com/orderedlist/minimal">View the Project on GitHub <small>orderedlist/minimal</small></a></p>
+        <h1>Chat-Heads.js</h1>
+        <p>A chat plugin inspired by Facebook Chat Heads</p>
+
+        <h2>Install</h2>
+
+        <p>Install with Bower:</p>
+        <div class="highlight">
+          <pre>bower install chat-heads --save</pre>
+        </div>
+
         <ul>
           <li><a href="https://github.com/orderedlist/minimal/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/orderedlist/minimal/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="http://github.com/orderedlist/minimal">Fork On <strong>GitHub</strong></a></li>
         </ul>
+
+        <hr/>
+
+        <h2>License</h2>
+        <h3>Commercial license</h3>
+        <p>If you want to use chat-heads.js to develop commercial sites, themes, projects, and applications, the Commercial license is the appropriate license. With this option, your source code is kept proprietary.</p>
+
+        <a href="">More information</a>
       </header>
+
       <section>
-        <h1>Let&rsquo;s Test Some Markup</h1>
+
+        <h1>Getting started</h1>
+        <hr/>
+
+        <h2>HTML</h2>
+        <p>The chat heads will be constrained to a container element in your HTML.</p>
+
+
+        <pre>
+&lt;div class=&quot;chat-head-container&quot;&gt;
+&lt;/div&gt;</pre>
+  <!-- &lt;div class=&quot;chat-head-blur&quot;&gt;&lt;/div&gt; -->
+
+        <p>Include the Chat Heads JavaScript and CSS in your site.</p>
+
+        <pre>&lt;script src=&quot;/path/to/chat-heads.min.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;path/to/chat-heads.css&quot;&gt;</pre>
+
+        <h2>Initialize with JavaScript</h2>
+
+        <p>Initialize the Chat Heads plugin, specifying any required <a href="#options">options</a>.</p>
+
+        <pre>var chat = new ChatHeads({
+    requireEmail: true
+});</pre>
+
+        <p>Now it's time to start adding <a href="#add-user">heads</a>!</p>
+
+        <h1>Methods</h1>
+        <hr/>
+
+        <h2>addHead</h2>
+
+        <p>Each chatting user </p>
+        <pre>chat.addHead(new ChatHead({
+    name:  'Colin',
+    email: 'colin@squarecat.io'
+}));</pre>
+
+        <a id="options"></a>
+        <h1>Options</h1>
+
+        <hr/>
+
+        <h1>Events</h1>
+
+        <hr/>
+
+
+      </section>
+
+
+
+  </div>
+
+
+<!--
+
+
+
+
+
+
         <p><em>View the <a href="http://github.github.com/github-flavored-markdown/sample_content.html">source of this content</a>.</em></p>
         <p>Let's get the whole "linebreak" thing out of the way. The next paragraph contains two phrases separated by a single newline character:</p>
         <p>Roses are red<br>Violets are blue</p>
@@ -137,7 +217,7 @@ end</code></pre>
         <p>This project is maintained by <a href="http://github.com/orderedlist">Steve Smith</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
-    </div>
+    </div> -->
 
     <div class="chat-head-container">
 
@@ -174,5 +254,8 @@ end</code></pre>
     <script src="javascripts/scale.fix.js"></script>
     <script src="javascripts/interact.js"></script>
     <script src="javascripts/chat-heads.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+
   </body>
 </html>

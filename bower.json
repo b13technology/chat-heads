@@ -1,0 +1,16 @@
+{
+  "name": "chat-heads",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Jivings/chat-heads",
+  "authors": [
+    "jivings <james.ivings@ripjar.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,26 @@
+.terms {}
+
+.terms > ol {
+  list-style: none;
+}
+
+
+.terms>ol>li:nth-child(2n+1) {
+  background: #f9f9f9;
+}
+
+.terms > ol > li {
+  padding: 30px;
+  border-top: 1px solid #dedede;
+  margin: 0 -30px;
+}
+
+.terms > ol > li:before {
+  content: counters(item, ".") ". ";
+  counter-increment: item;
+}
+
+.terms ol p {
+  margin: 0;
+  display: inline;
+}
