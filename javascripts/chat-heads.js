@@ -393,12 +393,7 @@
         };
 
         ChatHeads.prototype.message = function (message) {
-            this.renderMessage({
-                from: {
-                    name: message.from
-                },
-                content: message.content
-            });
+            this.renderMessage(message);
             // this.bringToFront(forHead);
             return this;
         };
