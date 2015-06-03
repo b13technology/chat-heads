@@ -1,0 +1,11 @@
+---
+- name: Install nodejs
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - nodejs
+
+- name: NPM Install global packages
+  npm: name={{item}} global=yes
+  with_items:
+    - pm2
+    - bower

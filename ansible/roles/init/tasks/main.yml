@@ -1,0 +1,30 @@
+---
+  - name: Update apt
+    sudo: yes
+    apt:  update_cache=yes
+
+  - name: Install system packages
+    sudo: yes
+    apt:  pkg={{ item }} state=latest
+    with_items:
+      - curl
+      - wget
+      - htop
+      - build-essential
+      - python-software-properties
+      - git
+      - sqlite3
+      - imagemagick
+
+  - name: Add nodesource repository
+    sudo: yes
+    shell: curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
+
+  - name: Update apt again
+    sudo: yes
+    apt:  update_cache=yes
+
+  - name: Install extra packages
+    sudo: yes
+    apt:  pkg={{ item }} state=latest
+    with_items: sys_packages

@@ -1,0 +1,16 @@
+---
+- name: Allow access to MySQL from anywhere
+  sudo: yes
+  lineinfile: dest=/etc/mysql/my.cnf regexp="^bind-address" "line=#bind-address = 0.0.0.0"
+  notify: restart mysql
+
+- name: Add root user from anywhere to MySQL
+  command: mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'; FLUSH PRIVILEGES;"
+
+- name: Create MySQL database chat_heads
+  command: mysql -u root -e "CREATE DATABASE IF NOT EXISTS chat_heads;"
+
+- name: Create MySQL database user chat_heads
+  command: mysql -u root -e "grant all on `chat_heads`.* to 'chat_heads'@'localhost' identified by 'chat_heads'; FLUSH PRIVILEGES;"
+
+

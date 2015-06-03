@@ -1,0 +1,15 @@
+---
+- hosts: all
+  sudo:  true
+  vars:
+    sys_packages:
+      - mcrypt
+  roles:
+    - init
+#    - nginx
+    - mysql
+    - mysql-vagrant
+    - nodejs
+#    - vagrant-mounted
+#    - mailcatcher
+#    - project-init
