@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/stylesheets/signin.css">
+
+    <script src="/socket.io/socket.io.js"></script>    
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/javascripts/user.js"></script>
+</head>
+<body ng-app="userModule">
+    <div class="container" ng-controller="UserController">
+
+    <form ng-hide="formIsSubmit" name="userForm" ng-controller="FormController" class="form-signin" ng-submit="login(userData);">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="inputEmail" class="sr-only">Username</label>
+        <input 
+            name="inputUsername" 
+            ng-model="userData.username" 
+            type="text" 
+            id="inputUsername" 
+            class="form-control" 
+            placeholder="Username" 
+            required 
+            autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input 
+            name="inputPass" 
+            ng-model="userData.pass" 
+            type="password" 
+            id="inputPassword" 
+            class="form-control" 
+            placeholder="Password" 
+            required>
+        <div class="checkbox">
+          <label>
+            <input
+                name="inputRemember"
+                ng-model="userData.remember" 
+                type="checkbox"
+                value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+    <div ng-hide="!formIsSubmit">
+        <div class="panel panel-default">
+            <div class="chatArea" style="height: 200px; overflow-y:auto;">
+                <ul class="messages" ng-repeat="msg in messages">
+                    <li>{{msg.clientId}}: {{msg.message}}</li>
+                </ul>
+            </div>
+            <input type="text" class="form-control inputMessage" placeholder="Type here...">
+        </div>
+    </div>
+
+    </div> <!-- /container -->
+
+</body>
+</html>
