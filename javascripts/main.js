@@ -32,6 +32,10 @@
       name: clientStatus.client.name,
       email: clientStatus.client.email
     });
+    socket.emit('setId', {
+      userId: 1,
+      clientId: clientStatus.client.id
+    });
   }
 
   chat.on('message', function (msg) {
@@ -61,6 +65,10 @@
           hasChats: false,
           client: result
         };
+        socket.emit('setId', {
+          userId: 1,
+          clientId: clientStatus.client.id
+        });
         localStorage.chatHeadsClientStatus = JSON.stringify(clientStatus);
     });
   });

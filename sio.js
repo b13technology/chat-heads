@@ -30,6 +30,44 @@ module.exports = function (server) {
     var userId;
     var clientId;
 
+    // // message from user
+    // var userMessageListener = function (message) {
+    //   console.log('userMessageListener', message);
+    //   if (clientId == message.clientId) {
+    //     socket.emit('userMessage', message);
+    //   }
+    // };
+
+    // // message from client
+    // var clientMessageListener = function (message) {
+    //   if (userId == message.userId) {
+    //     socket.emit('clientMessage', message);
+    //   }
+    // };
+
+    // console.log('         socket.request.isAuthenticated()', socket.request.isAuthenticated());
+    // if (socket.request.isAuthenticated()) {
+    //   userId = socket.request.user.id;
+    //   messageRouter.addListener('clientMessage', clientMessageListener);
+    // }
+
+    // socket.on('clientSubscribe', function (client) {
+    //   if (clientId) {
+    //     messageRouter.removeListener('userMessage', userMessageListener);
+    //   }
+    //   clientId = client.id;
+    //   messageRouter.addListener('userMessage', userMessageListener);
+    // });
+
+    // socket.on('disconnect', function () {
+    //   if (userId) {
+    //     messageRouter.removeListener('clientMessage', clientMessageListener);
+    //   }
+    //   if (clientId) {
+    //     messageRouter.removeListener('userMessage', userMessageListener);
+    //   }
+    // });
+
     // message from user
     var userMessageListener = function (message) {
       console.log('userMessageListener', message);
@@ -40,23 +78,26 @@ module.exports = function (server) {
 
     // message from client
     var clientMessageListener = function (message) {
+      console.log('clientMessageListener', message);
       if (userId == message.userId) {
         socket.emit('clientMessage', message);
       }
     };
 
-    console.log('         socket.request.isAuthenticated()', socket.request.isAuthenticated());
-    if (socket.request.isAuthenticated()) {
-      userId = socket.request.user.id;
-      messageRouter.addListener('clientMessage', clientMessageListener);
-    }
-
-    socket.on('clientSubscribe', function (client) {
-      if (clientId) {
-        messageRouter.removeListener('userMessage', userMessageListener);
-      }
-      clientId = client.id;
+    socket.on('setId', function(data){
+      userId = data.userId;
+      clientId = data.clientId;
+      
       messageRouter.addListener('userMessage', userMessageListener);
+      console.log('set userMessageListener');
+
+      console.log('         socket.request.isAuthenticated()', socket.request.isAuthenticated());
+      if (socket.request.isAuthenticated()){
+        messageRouter.addListener('clientMessage', clientMessageListener);
+        console.log('set clientMessageListener');
+      }
+      
+      console.log('set userId %s, clientId %s', userId, clientId);
     });
 
     socket.on('disconnect', function () {
@@ -66,7 +107,7 @@ module.exports = function (server) {
       if (clientId) {
         messageRouter.removeListener('userMessage', userMessageListener);
       }
-    });
+    });    
   });
 
   return io;
