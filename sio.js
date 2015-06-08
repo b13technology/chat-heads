@@ -85,6 +85,9 @@ module.exports = function (server) {
     };
 
     socket.on('setId', function(data){
+      messageRouter.removeListener('clientMessage', clientMessageListener);
+      messageRouter.removeListener('userMessage', userMessageListener);
+
       userId = data.userId;
       clientId = data.clientId;
       

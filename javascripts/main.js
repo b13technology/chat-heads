@@ -12,6 +12,13 @@
       console.log('clientMessage: ', data);
   });
 
+  var setID = function(){
+    socket.emit('setId', {
+      userId: 1,
+      clientId: clientStatus.client.id
+    });
+  }
+
   if(localStorage.chatHeadsClientStatus){
     try {
       clientStatus = JSON.parse(localStorage.chatHeadsClientStatus);
@@ -22,7 +29,7 @@
     requireEmail: (clientStatus ? false : true)
   });
 
-  chat.addHead(new ChatHead({
+  var head = chat.addHead(new ChatHead({
     name: 'James',
     email: 'james@ivings.org.uk'
   }));
@@ -32,10 +39,7 @@
       name: clientStatus.client.name,
       email: clientStatus.client.email
     });
-    socket.emit('setId', {
-      userId: 1,
-      clientId: clientStatus.client.id
-    });
+    setID();
   }
 
   chat.on('message', function (msg) {
@@ -65,12 +69,25 @@
           hasChats: false,
           client: result
         };
-        socket.emit('setId', {
-          userId: 1,
-          clientId: clientStatus.client.id
-        });
+        setID();
         localStorage.chatHeadsClientStatus = JSON.stringify(clientStatus);
     });
   });
+
+  socket.on('userMessage', function (data) {
+      console.log('userMessage: ', data);
+      var msg = {};
+      msg.content = data.message;
+      console.log('chat.currentUser', chat.currentUser);
+      console.log('chat.setUser', chat.setUser);
+      msg.to = chat.currentUser;
+      msg.from = {
+        id: head.id,
+        name: data.userId,
+      };
+      chat.message(msg);
+  });
+
+  window.mainJsChat = chat;
   
 }());
