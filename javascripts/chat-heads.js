@@ -263,12 +263,10 @@
             var target = e.currentTarget;
             var msg = {};
             msg.content = target.childNodes[0].value;
-            if (this.options.requireEmail) {
-                msg.from = {
-                    name: 'Jimbo',
-                    email: this.fromEmail
-                };
-            }
+            // if (this.options.requireEmail) {
+            //     msg.from = this.currentUser;
+            // }
+            msg.from = this.currentUser;
             msg.to = {
                 name: head.name,
                 email: head.email,
@@ -289,17 +287,22 @@
             this.container.querySelector('#user-form').style.display = 'none';
             this.container.querySelector('#chat-submit').style.display = 'block';
 
-            this.trigger('user:logon', {
-                email: email,
-                name: name
-            });
+            this.currentUser = {
+                name: name.value,
+                email: email.value
+            };
+
+            this.trigger('user:logon', this.currentUser);
             return false;
+        };
+
+        ChatHeads.prototype.setUser = function(user){
+            this.currentUser = user;
         };
 
         ChatHeads.prototype.renderMessage = function (msg) {
             var textContainer = this.chatContainer.querySelector('.chat-messages');
             var message = '<p class="line">' + msg.content + '</p>';
-
             if (this.lastMessageAuthor === msg.from.name) {
                 var child = textContainer.lastChild;
                 child.innerHTML += message;
@@ -334,16 +337,37 @@
 
             this.chatContainer = chatContainer;
 
-            var userForm = chatContainer.querySelector('#user-form');
-            userForm.addEventListener('submit', function (e) {
-                this.onUserSubmit(e, head);
-            }.bind(this), false);
+            var form = this.container.querySelector('#user-form');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    this.onUserSubmit(e, head);
+                    return false;
+                }.bind(this), false);
+            }
 
-            this.chatForm = chatContainer.querySelector('#chat-submit');
+
+            this.chatForm = this.container.querySelector('#chat-submit');
             this.chatForm.style.display = this.options.requireEmail ? 'none' : 'block';
             this.chatForm.addEventListener("submit", function (e) {
+                e.preventDefault();
                 this.onSubmit(e, head)
+                return false;
             }.bind(this), false);
+
+            if (this.options.welcomeMessage) {
+                this.renderMessage({
+                    content: this.options.welcomeMessage,
+                    from: this.currentUser,
+                    from: {
+                        name: 'Manager',
+                        // email: head.email,
+                        id: head.id
+                    }
+                });
+            }
+
+
             return this;
         };
 
@@ -387,12 +411,7 @@
         };
 
         ChatHeads.prototype.message = function (message) {
-            this.renderMessage({
-                from: {
-                    name: message.from
-                },
-                content: message.content
-            });
+            this.renderMessage(message);
             // this.bringToFront(forHead);
             return this;
         };
@@ -424,27 +443,5 @@
         return ChatHeads;
 
     }());
-
-
-    var chat = window.chat =  new ChatHeads({
-        requireEmail: true
-    });
-
-    setTimeout(function () {
-       chat.start();
-    }, 1000);
-
-    chat.addHead(new ChatHead({
-        name: 'James',
-        email: 'james@ivings.org.uk'
-    }));
-
-    chat.on('message', function (msg) {
-        console.log(msg);
-    });
-
-    chat.on('user:logon', function (user) {
-
-    });
 
 }());
